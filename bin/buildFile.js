@@ -42,12 +42,24 @@ function getScript(content){
 }
 
 /**
+ * 获取组件类名
+ * @param {*} content 
+ */
+function getClassName(content){
+  
+}
+
+
+/**
  * 文件组合
  * @param {*} script 
  * @param {*} template 
  * @param {*} style 
  */
 function combinContent(script, template, style){
+
+  const className = getClassName(script)
+
   let component = '\n'
   component += 'const shadowDom = `'
   component +=`<style>${style}</style>\n<template>${template}</template>`
@@ -55,7 +67,7 @@ function combinContent(script, template, style){
   component+= '\n'
   component+= script
   component+= '\n'
-  component += `customElements.define('red-box', RedBox)`
+  component += `customElements.define('red-box', ${className})`
 
   console.log('script', script)
   console.log('template', template)
