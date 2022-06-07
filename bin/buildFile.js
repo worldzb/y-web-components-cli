@@ -83,13 +83,22 @@ function combinTemplate(template, style, componentName){
  * @param {*} template 
  */
 function combinScript(script){
-  const reg = /(?<=constructor\(\)\{[^]*super\(.*\))(\n)(?=[^]*?\})/
-  // console.log(script.match(reg)[0])
+  const reg = /(?<=constructor\(\)\{[^]*super\(.*\))(\n|\s|)(?=[^]*\})/
   const createDom = `
     this._rootShadow = this.attachShadow({mode:'open'})
     this._rootShadow.innerHTML = __shadowDom__
   `
-  script = script.replace(reg, createDom)
+  if(script.match(reg)){
+    script = script.replace(reg, createDom)
+  }else{
+    const reg = /(?<=constructor\(\)\{)([^]*?)(?=\})/
+    let constructorDom = script.match(reg) && script.match(reg)[0]
+    if(constructorDom){
+      script = script.replace(reg, constructorDom + '\n' + createDom)
+    }else{
+      throw new Error('模版替换错误')
+    }
+  }
   return script
 }
 
