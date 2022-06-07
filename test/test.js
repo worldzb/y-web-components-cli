@@ -1,29 +1,46 @@
 
-const shadowDom = `<style>
-.test{
-  background: red;
+const __shadowDom__ = `
+  <style>
+.container{
+  background: blue;
+  width: 200px;
+  height: 200px;
 }
 </style>
-<template>
-  <div>
+  <div class="container">
     sadfsdf
-    <slot name="fasdf"></slot>
+    <slot></slot>
     <template>
       <div>发生的发v啊似懂非懂饭撒发生</div>
     </template>
   </div>
-</template>`
+
+  `
 
 class BlueBox extends HTMLElement{
   constructor(){
-    super()
-    this.init()
-    this.createDom()
-    this.eventBind()
+    super("fff")
+    this._rootShadow = this.attachShadow({mode:'open'})
+    this._rootShadow.innerHTML = __shadowDom__
+      this.bbb = 100
+    this.aaa = 10
+    // console.log('创建')
   }
+
   connectedCallback(){
-    this.eventBind()
+    // console.log('元素插入', )
+    setTimeout(() => {
+      this.eventBind()
+    }, 200);
+  }
+  eventBind(){
+    // console.log(this._rootShadow)
+    // console.log(this.shadowRoot)
+    // console.log(this.shadowRoot.querySelector('.container'))
+    this._rootShadow.querySelector('.container').onclick = function(){
+      console.log('aaa')
+    }
   }
 }
 
-customElements.define('red-box', RedBox)
+customElements.define("blue-box", BlueBox)

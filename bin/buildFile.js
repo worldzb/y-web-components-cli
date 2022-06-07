@@ -16,9 +16,7 @@ function resolve(filePath){
  * @param {*} content 
  */
 function getTemplate(content){
-  // console.log('content',content)
   const reg = /(?<=<template.*>)([^]+)(?=<\/template>)/
-  console.log("template",content.match(reg))
   return content.match(reg) && content.match(reg)[0]
 }
 
@@ -33,7 +31,7 @@ function getStyle(content){
 }
 
 /**
- * 获取 style
+ * 获取 Script
  * @param {*} content 
  */
 function getScript(content){
@@ -45,10 +43,55 @@ function getScript(content){
  * 获取组件类名
  * @param {*} content 
  */
-function getClassName(content){
-  
+function getClassName(script){
+  const reg = /(?<=class)([^]*)(?=extends)/
+  return script.match(reg) && script.match(reg)[0].trim()
 }
 
+/**
+ * 类名转换为组件名
+ * @param {*} classname 
+ */
+function className2ComponentName(classname){
+  const reg = /([A-Z]+)([^A-Z]*)(?<![A-Z])/g
+  let res = classname.match(reg)
+  if(Array.isArray(res)){
+    res = res.map(item=>item.toLocaleLowerCase())
+    return res.join('-')
+  }
+  return ''
+}
+
+/**
+ * 组合 template
+ * @param {*} template 
+ * @param {*} style 
+ * @returns 
+ */
+function combinTemplate(template, style, componentName){
+  let temp = 'const __shadowDom__ = `'
+  temp += `
+  <style>${style}</style>${template}
+  `
+  temp += '`'
+  return temp
+}
+
+/**
+ * 组合 JS
+ * @param {*} script 
+ * @param {*} template 
+ */
+function combinScript(script){
+  const reg = /(?<=constructor\(\)\{[^]*super\(.*\))(\n)(?=[^]*?\})/
+  // console.log(script.match(reg)[0])
+  const createDom = `
+    this._rootShadow = this.attachShadow({mode:'open'})
+    this._rootShadow.innerHTML = __shadowDom__
+  `
+  script = script.replace(reg, createDom)
+  return script
+}
 
 /**
  * 文件组合
@@ -59,28 +102,22 @@ function getClassName(content){
 function combinContent(script, template, style){
 
   const className = getClassName(script)
-
+  const componentName = className2ComponentName(className)
   let component = '\n'
-  component += 'const shadowDom = `'
-  component +=`<style>${style}</style>\n<template>${template}</template>`
-  component +='`'
+  component += combinTemplate(template, style, componentName)
   component+= '\n'
-  component+= script
+  component+= combinScript(script)
   component+= '\n'
-  component += `customElements.define('red-box', ${className})`
-
-  console.log('script', script)
-  console.log('template', template)
-  console.log('style', style)
+  component += `customElements.define("${componentName}", ${className})`
   return component
 }
 
 /**
  * 生成组件
- * @param {*} component 
+ * @param {*} component
+ * @param {*} filePath 
  */
 function createComponent(component, filePath){
-  console.log('filePath', filePath)
   const jsFilePath = filePath.replace('wcp', 'js')
   try{
     const res = fs.writeFileSync(jsFilePath, component)

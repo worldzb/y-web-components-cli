@@ -4,10 +4,32 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <script src="./test.js"></script>
+  <title>web components 组件测试</title>
+  <!-- <script src="./components/readBox.js" defer></script> -->
+  <script src="./test.js" defer></script>
 </head>
 <body>
-  
+  <div id="test" style="width: 100px; height:100px; background-color: red;">
+
+  </div>
+  <blue-box id="bluebox">
+    <div style="background-color: red;" id="redBar">
+      fasdf
+    </div>
+    <div style="background-color: yellow;" id="yellowBar">
+      fasdfasdf
+    </div>
+  </blue-box>
+
 </body>
 </html>
+<script>
+  const blueBox = document.getElementById('bluebox')
+  const redBar = document.getElementById('redBar')
+  const yellowBar = document.getElementById('yellowBar')
+  const testBox = document.getElementById('test')
+  console.log('blueBox',blueBox)
+  // console.log(redBar)
+  // console.log('yellowBar',yellowBar)
+  // console.log('testBox', testBox)
+</script>
