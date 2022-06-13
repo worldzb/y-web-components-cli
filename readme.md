@@ -51,10 +51,10 @@ class BlueBox extends HTMLElement{
 ``` shell
 ywcp build test.wcp
 ```
-改命令会在 wcp 文件下生成相同的 js 文件，内容如下
+该命令会在 wcp 文件下生成相同的 js 文件，内容如下
 
 ``` javascript
-const __shadowDom__ = `
+const __template__ = `
   <style>
 .container{
   background: blue;
@@ -69,7 +69,7 @@ const __shadowDom__ = `
 class BlueBox extends HTMLElement{
   constructor(){super("fff")
     this._rootShadow = this.attachShadow({mode:'open'})
-    this._rootShadow.innerHTML = __shadowDom__
+    this._rootShadow.innerHTML = __template__
   }
 
   connectedCallback(){
