@@ -1,6 +1,10 @@
+/**
+ * wcp 文件编译主文件
+ */
 
 const fs = require('fs')
 const path = require('path')
+const {compileScss} = require('./compileScss')
 
 /**
  * 路径解析
@@ -24,10 +28,23 @@ function getTemplate(content){
  * 获取 style
  * @param {*} content 
  */
-function getStyle(content){
-  const reg = /(?<=<style.*>)([^]+)(?=<\/style>)/
-  // console.log(content.match(reg)[0])
-  return content.match(reg) && content.match(reg)[0]
+function getStyle(content, filePath){
+  // 获取带有 <style></style> 的样式
+  const reg0 = /<style.*>([^]+)<\/style>/
+  // 获取不带 <style></style> 的样式
+  const reg1 = /(?<=<style.*>)([^]+)(?=<\/style>)/ 
+  // 获取样式使用语言
+  const reg2 = /(?<=<style\s+lang.*=.*")([^]+)(?=".*>)/ 
+  // 先匹配 所有 style 内容，再去细分匹配，优化匹配速度
+  const styleAll = content.match(reg0) && content.match(reg0)[0]
+  const stylePure = styleAll.match(reg1) && styleAll.match(reg1)[0]
+  const styleLang = styleAll.match(reg2) && styleAll.match(reg2)[0]
+
+  // 获取 style lang， 以便调用预编译器进行编译
+  if(styleLang==='scss'){
+    return compileScss(stylePure, filePath)
+  }
+  return stylePure
 }
 
 /**
@@ -69,10 +86,8 @@ function className2ComponentName(classname){
  * @returns 
  */
 function combinTemplate(template, style, componentName){
-  let temp = 'const __shadowDom__ = `'
-  temp += `
-  <style>${style}</style>${template}
-  `
+  let temp = 'const __template__ = `'
+  temp += `\n<style>\n${style}\n</style>${template}`
   temp += '`'
   return temp
 }
@@ -86,7 +101,7 @@ function combinScript(script){
   const reg = /(?<=constructor\(\)\{[^]*super\(.*\))(\n|\s|)(?=[^]*\})/
   const createDom = `
     this._rootShadow = this.attachShadow({mode:'open'})
-    this._rootShadow.innerHTML = __shadowDom__
+    this._rootShadow.innerHTML = __template__
   `
   if(script.match(reg)){
     script = script.replace(reg, createDom)
@@ -109,7 +124,6 @@ function combinScript(script){
  * @param {*} style 
  */
 function combinContent(script, template, style){
-
   const className = getClassName(script)
   const componentName = className2ComponentName(className)
   let component = '\n'
@@ -129,7 +143,7 @@ function combinContent(script, template, style){
 function createComponent(component, filePath){
   const jsFilePath = filePath.replace('wcp', 'js')
   try{
-    const res = fs.writeFileSync(jsFilePath, component)
+    fs.writeFileSync(jsFilePath, component)
   }catch(err){}
 }
 
@@ -138,11 +152,23 @@ function buildFile(filename){
   const content = fs.readFileSync(filePath, 'utf-8')
   const script = getScript(content)
   const template = getTemplate(content)
-  const style = getStyle(content)
+  const style = getStyle(content, filePath)
   const component = combinContent(script, template, style)
   createComponent(component, filePath)
 }
 
-module.exports = buildFile
+module.exports = {
+  buildFile,
+  createComponent,
+  combinContent,
+  getTemplate,
+  getStyle,
+  getScript,
+  getClassName,
+  className2ComponentName,
+  combinTemplate,
+  combinScript,
+  combinContent,
+}
 
 

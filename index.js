@@ -6,7 +6,7 @@ const figlet = require('figlet');
 const fs = require('fs')
 const path = require('path')
 
-const buildFile = require('./bin/buildFile')
+const {buildFile} = require('./bin/buildFile')
 
 function readVersion(){
   const config = JSON.parse(fs.readFileSync(path.join(__dirname, './package.json'), 'utf-8'))

@@ -86,6 +86,13 @@ class BlueBox extends HTMLElement{
 customElements.define("blue-box", BlueBox)
 ```
 
+## scss
+wcp 文件现已支持 scss 文件的转译，和 vue 中使用方法相同， 只需要添加 `lang="scss"` 即可使用。
+> 关于 scoped 的问题    
+> 由于 web components 天然支持 style 隔离， 所以无需添加 scoped
+
+
+
 ## 相关
 [web components 开发](https://developer.mozilla.org/zh-CN/docs/Web/Web_Components/Using_custom_elements#%E6%A6%82%E8%BF%B0)
 
