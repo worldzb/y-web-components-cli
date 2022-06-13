@@ -24,7 +24,7 @@ class BlueBox extends HTMLElement{
     }, 200);
   }
   eventBind(){
-    // console.log(this._rootShadow)
+    console.log(this._rootShadow)
     // console.log(this.shadowRoot)
     // console.log(this.shadowRoot.querySelector('.container'))
     this._rootShadow.querySelector('.container').onclick = function(){

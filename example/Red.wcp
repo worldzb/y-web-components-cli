@@ -1,0 +1,15 @@
+<template>
+  
+</template>
+
+<script>
+class TestCom extends HTMLElement{
+  constructor(){
+    super("fff")
+  }
+}
+</script>
+
+<style>
+
+</style>

@@ -2,6 +2,7 @@
  * wcp 文件编译主文件
  */
 
+const chalk = require('chalk')
 const fs = require('fs')
 const path = require('path')
 const {compileScss} = require('./compileScss')
@@ -36,15 +37,19 @@ function getStyle(content, filePath){
   // 获取样式使用语言
   const reg2 = /(?<=<style\s+lang.*=.*")([^]+)(?=".*>)/ 
   // 先匹配 所有 style 内容，再去细分匹配，优化匹配速度
-  const styleAll = content.match(reg0) && content.match(reg0)[0]
-  const stylePure = styleAll.match(reg1) && styleAll.match(reg1)[0]
-  const styleLang = styleAll.match(reg2) && styleAll.match(reg2)[0]
-
-  // 获取 style lang， 以便调用预编译器进行编译
-  if(styleLang==='scss'){
-    return compileScss(stylePure, filePath)
+  try{
+    const styleAll = content.match(reg0) && content.match(reg0)[0]
+    const stylePure = styleAll.match(reg1) && styleAll.match(reg1)[0]
+    const styleLang = styleAll.match(reg2) && styleAll.match(reg2)[0]
+     // 获取 style lang， 以便调用预编译器进行编译
+    if(styleLang==='scss' && stylePure){
+      return compileScss(stylePure, filePath)
+    }
+    return stylePure
+  }catch(err){
+    console.log(chalk.red(err))
+    return ''
   }
-  return stylePure
 }
 
 /**
@@ -147,9 +152,10 @@ function createComponent(component, filePath){
   }catch(err){}
 }
 
-function buildFile(filename){
-  const filePath = resolve(filename)
+function buildFile(filename, isAbs){
+  const filePath = isAbs? filename : resolve(filename)
   const content = fs.readFileSync(filePath, 'utf-8')
+  if(!content)return
   const script = getScript(content)
   const template = getTemplate(content)
   const style = getStyle(content, filePath)

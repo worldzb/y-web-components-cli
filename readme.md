@@ -86,6 +86,12 @@ class BlueBox extends HTMLElement{
 customElements.define("blue-box", BlueBox)
 ```
 
+## 目录监听
+单个文件可使用 `ywcp build *.wcp` 来进行转译，但是如果一个项目中有多个 `wcp` 文件时，再去手动转译时就
+会比较麻烦，此时可用 `ywcp watch` 进行目录的监听。该命令会持续监听 wcp 文件的变动，并实时在文件同级目录
+下生成 js 文件
+
+
 ## scss
 wcp 文件现已支持 scss 文件的转译，和 vue 中使用方法相同， 只需要添加 `lang="scss"` 即可使用。
 > 关于 scoped 的问题    
