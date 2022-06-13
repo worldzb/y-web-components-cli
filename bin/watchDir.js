@@ -20,7 +20,6 @@ function addFileListener(path_){
 
 function fileChangeListener(path_){
   console.log(chalk.gray.bgCyan(' change '), path_.replace(path.resolve(),''))
-  
   buildFile(path_, true)
 }
 
